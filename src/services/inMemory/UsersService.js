@@ -1,6 +1,7 @@
+const saltRounds = 10;
 const { nanoid } = require('nanoid');
 const bcrypt = require('bcrypt');
-const saltRounds = 10;
+const InvariantError = require('../../exceptions/InvariantError');
 
 class userService {
   constructor() {
@@ -28,7 +29,7 @@ class userService {
 
     const isSuccess = this._users.filter((user) => user.id === id).length > 0;
 
-    if (!isSuccess) throw new errorr('User gagal ditambahkan');
+    if (!isSuccess) throw new InvariantError('Catatan gagal ditambahkan');
 
     return id;
   }

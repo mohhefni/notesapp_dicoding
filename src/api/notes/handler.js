@@ -45,9 +45,9 @@ class NoteHandler {
       return response;
     }
   }
+
   getNotesHandler() {
     const notes = this._service.getNotes();
-
     return {
       status: 'success',
       data: {
@@ -55,6 +55,7 @@ class NoteHandler {
       },
     };
   }
+
   getNoteByIdHandler(request, h) {
     try {
       const { id } = request.params;
@@ -85,6 +86,7 @@ class NoteHandler {
       return response;
     }
   }
+
   putNoteByIdHandler(request, h) {
     try {
       this._validator.validateNotePayload(request.payload);
@@ -113,6 +115,7 @@ class NoteHandler {
       return response;
     }
   }
+
   deleteNoteByIdHandler(request, h) {
     try {
       const { id } = request.params;
