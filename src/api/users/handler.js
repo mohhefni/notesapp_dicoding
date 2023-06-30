@@ -1,54 +1,83 @@
-class UserHandler {
-  constructor(service) {
+const ClientError = require('../../exceptions/ClientError');
+
+class UsersHandler {
+  constructor(service, validator) {
     this._service = service;
+    this._validator = validator;
 
     this.postUserHandler = this.postUserHandler.bind(this);
-    this.getUsersHandler = this.getUsersHandler.bind(this);
+    this.getUserByIdHandler = this.getUserByIdHandler.bind(this);
   }
 
-  postUserHandler(request, h) {
+  async postUserHandler(request, h) {
     try {
-      const { name, email, password } = request.payload;
+      this._validator.validateUserPayload(request.payload);
+      const { username, password, fullname } = request.payload;
 
-      const userId = this._service.addUser({ name, email, password });
+      const userId = await this._service.addUser({ username, password, fullname });
 
       const response = h.response({
         status: 'success',
         message: 'User berhasil ditambahkan',
-        data: { userId },
+        data: {
+          userId,
+        },
       });
       response.code(201);
       return response;
     } catch (error) {
+      if (error instanceof ClientError) {
+        const response = h.response({
+          status: 'fail',
+          message: error.message,
+        });
+        response.code(error.statusCode);
+        return response;
+      }
+
+      // Server ERROR!
       const response = h.response({
-        status: 'fail',
-        message: error.message,
+        status: 'error',
+        message: 'Maaf, terjadi kegagalan pada server kami.',
       });
-      response.code(400);
+      response.code(500);
+      console.error(error);
       return response;
     }
   }
 
-  getUsersHandler(request, h) {
+  async getUserByIdHandler(request, h) {
     try {
-      const users = this._service.getUsers();
-      const response = h.response({
+      const { id } = request.params;
+
+      const user = await this._service.getUserById(id);
+
+      return {
         status: 'success',
-        message: 'Berhasil menampilkan user',
         data: {
-          users,
+          user,
         },
-      });
-      return response;
+      };
     } catch (error) {
+      if (error instanceof ClientError) {
+        const response = h.response({
+          status: 'fail',
+          message: error.message,
+        });
+        response.code(error.statusCode);
+        return response;
+      }
+
+      // server ERROR!
       const response = h.response({
-        status: 'success',
-        message: error.message,
+        status: 'error',
+        message: 'Maaf, terjadi kegagalan pada server kami.',
       });
-      response.code(404);
+      response.code(500);
+      console.error(error);
       return response;
     }
   }
 }
 
-module.exports = UserHandler;
+module.exports = UsersHandler;
