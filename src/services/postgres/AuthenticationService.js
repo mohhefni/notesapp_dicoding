@@ -1,14 +1,14 @@
-const { pool } = require('pg');
+const { Pool } = require('pg');
 const InvariantError = require('../../exceptions/InvariantError');
 
 class AuthenticationService {
   constructor() {
-    this._pool = pool;
+    this._pool = new Pool();
   }
 
   async addRefreshToken(token) {
     const query = {
-      text: 'INSERT INTO authentications VALUES ($1)',
+      text: 'INSERT INTO authentications VALUES($1)',
       values: [token],
     };
 
