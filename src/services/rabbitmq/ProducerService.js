@@ -1,3 +1,4 @@
+/* eslint-disable import/no-extraneous-dependencies */
 const amqp = require('amqplib');
 
 const ProducerService = {
